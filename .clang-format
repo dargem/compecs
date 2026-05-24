@@ -1,0 +1,8 @@
+# .clang-format
+BasedOnStyle: Google
+
+ColumnLimit: 100
+IndentWidth: 4
+
+BreakConstructorInitializers: AfterColon
+ConstructorInitializerIndentWidth: 8

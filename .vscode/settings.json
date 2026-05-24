@@ -1,0 +1,29 @@
+{
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "[java]": {
+        "editor.tabSize": 4,
+        "editor.insertSpaces": true
+    },
+    "java.jdt.ls.java.home": "/usr/lib/jvm/java-21-openjdk",
+    "C_Cpp.default.cppStandard": "c++23",
+    "C_Cpp.default.cStandard": "c17",
+    "C_Cpp.clang_format_style": "file",
+    "editor.formatOnSave": true,
+    "cSpell.words": [
+        "ABCC",
+        "CBCA",
+        "compecs",
+        "csbi"
+    ],
+    "cmake.sourceDirectory": "/home/tristan/Documents/github/TUI-Art/cpp"
+    ,
+    "clangd.arguments": [
+        "--compile-commands-dir=${workspaceFolder}/build"
+    ],
+    "clangd.fallbackFlags": [
+        "-std=c++20"
+    ]
+}
