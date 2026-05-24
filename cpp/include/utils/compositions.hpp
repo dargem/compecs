@@ -15,8 +15,8 @@ template <typename T, auto Differentiator = [] {}>
 struct BaseClass : Base<T> {};
 
 template <typename T>
-struct Layout {
-};  // type pack has higher specificity so even for arguments of length 1 this won't instantiate
+struct Layout {};
+// type pack has higher specificity so even for arguments of length 1 this won't instantiate
 
 template <typename... Ts>
 struct Layout<TypePack<Ts...>> : BaseClass<Ts>... {};

@@ -21,9 +21,6 @@ struct Disassemble<Ret (Class::*)(Args...) const> {
     using DecayedArgPack = TypePack<std::__remove_cvref_t<Args>...>;
 };
 
-template <typename F, typename... Args>
-concept Callable = std::invocable<F, Args...>;
-
 // Decltype the function pointer
 template <typename F>
     requires requires(F f) { &F::operator(); }
