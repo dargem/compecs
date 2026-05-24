@@ -1,0 +1,34 @@
+#ifndef COMPECS_LAMBDA_TRAITS_HPP
+#define COMPECS_LAMBDA_TRAITS_HPP
+
+#include <tuple>
+#include <type_traits>
+
+#include "utils/packs.hpp"
+
+namespace compecs {
+
+// Extract
+template <typename T>
+struct Disassemble {
+    using type = void;
+};
+
+template <typename Ret, typename Class, typename... Args>
+struct Disassemble<Ret (Class::*)(Args...) const> {
+    using ReturnType = Ret;
+    using ArgPack = TypePack<Args...>;
+    using DecayedArgPack = TypePack<std::__remove_cvref_t<Args>...>;
+};
+
+template <typename F, typename... Args>
+concept Callable = std::invocable<F, Args...>;
+
+// Decltype the function pointer
+template <typename F>
+    requires requires(F f) { &F::operator(); }
+using FunctionInfo = Disassemble<decltype(&F::operator())>;
+
+}  // namespace compecs
+
+#endif

@@ -1,6 +1,7 @@
 #ifndef COMPECS_PACKS_HPP
 #define COMPECS_PACKS_HPP
 
+#include <tuple>
 #include <type_traits>
 
 namespace compecs {
@@ -24,6 +25,16 @@ struct IsTypePackImpl<TypePack<Ts...>> : std::true_type {};
 
 template <typename T>
 concept IsTypePack = detail::IsTypePackImpl<T>::value;
+
+template <typename T>
+struct PackConvert {
+    static_assert(false, "PackConvert called without using a pack");
+};
+
+template <typename... Ts>
+struct PackConvert<TypePack<Ts...>> {
+    using Tuple = std::tuple<Ts...>;
+};
 
 }  // namespace compecs
 
