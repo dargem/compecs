@@ -18,12 +18,16 @@
         "compecs",
         "csbi"
     ],
-    "cmake.sourceDirectory": "/home/tristan/Documents/github/TUI-Art/cpp"
-    ,
+    "cmake.sourceDirectory": "${workspaceFolder}/cpp",
+    "cmake.buildDirectory": "${workspaceFolder}/cpp/build",
+    "cmake.configureSettings": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+    },
+    "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
     "clangd.arguments": [
-        "--compile-commands-dir=${workspaceFolder}/build"
+        "--compile-commands-dir=${workspaceFolder}"
     ],
     "clangd.fallbackFlags": [
-        "-std=c++20"
+        "-std=c++23"
     ]
 }
