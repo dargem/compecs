@@ -1,5 +1,3 @@
-#pragma once
-
 #include "utils/checks.hpp"
 
 #include "gtest/gtest.h"
