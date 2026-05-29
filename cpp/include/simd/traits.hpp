@@ -1,8 +1,12 @@
 #pragma once
 
+#include <immintrin.h>
+
 #include <bit>
 #include <cstddef>
 #include <cstdint>
+
+namespace compecs::simd_traits {
 
 enum class InstructionSet {
     NONE,
@@ -40,6 +44,8 @@ struct InstructionSetTraits<InstructionSet::NONE> {
     static __mi slli_epi32(__mi a, int bits) { return a << bits; }
     static __mi set1_epi32(int val) { return val; }
     static __mi mullo_epi32(__mi a, __mi b) { return a * b; }
+    static __mi add_epi32(__mi a, __mi b) { return a + b; }
+    static __mi sub_epi32(__mi a, __mi b) { return a - b; }
 
     // Scalar fallback, treat "epi64" ops as operating on the scalar value
     static __mi slli_epi64(__mi a, int bits) { return slli_epi32(a, bits); }
@@ -96,7 +102,9 @@ struct InstructionSetTraits<InstructionSet::AVX128> {
     static __mi srli_epi64(__mi a, int bits) { return _mm_srli_epi64(a, bits); }
     static __mi slli_epi64(__mi a, int bits) { return _mm_slli_epi64(a, bits); }
     static __mi add_epi64(__mi a, __mi b) { return _mm_add_epi64(a, b); }
+    static __mi add_epi32(__mi a, __mi b) { return _mm_add_epi32(a, b); }
     static __mi set1_epi64(uint64_t a) { return _mm_set1_epi64x(a); }
+    static __mi sub_epi32(__mi a, __mi b) { return _mm_sub_epi32(a, b); }
 
     // Bit ops
     static __mi xor_si(__mi a, __mi b) { return _mm_xor_si128(a, b); }
@@ -152,7 +160,9 @@ struct InstructionSetTraits<InstructionSet::AVX256> {
     static __mi srli_epi64(__mi a, int bits) { return _mm256_srli_epi64(a, bits); }
     static __mi slli_epi64(__mi a, int bits) { return _mm256_slli_epi64(a, bits); }
     static __mi add_epi64(__mi a, __mi b) { return _mm256_add_epi64(a, b); }
+    static __mi add_epi32(__mi a, __mi b) { return _mm256_add_epi32(a, b); }
     static __mi set1_epi64(uint64_t a) { return _mm256_set1_epi64x(a); }
+    static __mi sub_epi32(__mi a, __mi b) { return _mm256_sub_epi32(a, b); }
 
     // Bit ops
     static __mi xor_si(__mi a, __mi b) { return _mm256_xor_si256(a, b); }
@@ -167,3 +177,65 @@ struct InstructionSetTraits<InstructionSet::AVX256> {
     static void store_ps(float* mem_addr, __m source) { _mm256_store_ps(mem_addr, source); }
 };
 #endif
+
+#ifdef __AVX512F__
+template <>
+struct InstructionSetTraits<InstructionSet::AVX512> {
+    static constexpr size_t bits = 512;
+    static constexpr size_t bytes = bits / 8;
+
+    using __mi = __m512i;
+    using __m = __m512;
+
+    // Integer ops
+    template <int bit_shift>  // needs a compile time constant
+    static __mi rol_epi32(__mi a) {
+        return _mm512_rol_epi32(a, bit_shift);
+    }
+
+    template <int bit_shift>  // needs a compile time constant
+    static __mi rol_epi64(__mi a) {
+        return _mm512_rol_epi64(a, bit_shift);
+    }
+
+    static __mi srli_epi32(__mi a, int bits) { return _mm512_srli_epi32(a, bits); }
+    static __mi slli_epi32(__mi a, int bits) { return _mm512_slli_epi32(a, bits); }
+    static __mi set1_epi32(int val) { return _mm512_set1_epi32(val); }
+    static __mi mullo_epi32(__mi a, __mi b) { return _mm512_mullo_epi32(a, b); }
+    static __mi srli_epi64(__mi a, int bits) { return _mm512_srli_epi64(a, bits); }
+    static __mi slli_epi64(__mi a, int bits) { return _mm512_slli_epi64(a, bits); }
+    static __mi add_epi64(__mi a, __mi b) { return _mm512_add_epi64(a, b); }
+    static __mi add_epi32(__mi a, __mi b) { return _mm512_add_epi32(a, b); }
+    static __mi sub_epi32(__mi a, __mi b) { return _mm512_sub_epi32(a, b); }
+    static __mi set1_epi64(uint64_t a) { return _mm512_set1_epi64(a); }
+
+    // Bit ops
+    static __mi xor_si(__mi a, __mi b) { return _mm512_xor_si512(a, b); }
+    static __mi or_si(__mi a, __mi b) { return _mm512_or_si512(a, b); }
+    static void store_si(__mi* mem_addr, __mi source) { _mm512_store_si512(mem_addr, source); }
+    static __mi load_si(const __mi* mem_addr) { return _mm512_load_si512(mem_addr); }
+
+    // Float ops
+    static __m sub_ps(__m a, __m b) { return _mm512_sub_ps(a, b); }
+    static __m set1_ps(float val) { return _mm512_set1_ps(val); }
+    static __m castsi_ps(__mi a) { return _mm512_castsi512_ps(a); }
+    static void store_ps(float* mem_addr, __m source) { _mm512_store_ps(mem_addr, source); }
+};
+#endif
+
+#ifdef __AVX512F__
+#define SIMD_INSTRUCTION_SET InstructionSet::AVX512
+#elif defined(__AVX2__)
+#define SIMD_INSTRUCTION_SET InstructionSet::AVX256
+#elif defined(__AVX__)
+#define SIMD_INSTRUCTION_SET InstructionSet::AVX128
+#else
+#warning Being ran on a CPU that does not support any AVX instruction sets. \
+Or it may have been compiled without targeting your architecture (flags march native or specify mavx). \
+Expect no benefits from vectorization.
+#define SIMD_INSTRUCTION_SET InstructionSet::NONE
+#endif
+
+using Set = InstructionSetTraits<SIMD_INSTRUCTION_SET>;
+
+}  // namespace compecs::simd_traits
