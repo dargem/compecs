@@ -34,14 +34,19 @@ struct PackFilter {
 
 namespace detail {
 
-template <typename... Ts>
-struct PackCat {
-    static_assert(false, "PackCat called without a pack");
+template <typename... T>
+struct PackConcat {
+    static_assert(false, "PackConcat called without packs");
 };
 
 template <typename... Ts>
-struct PackCat<TypePack<Ts>...> {
-    using Result = TypePack<Ts...>;
+struct PackConcat<TypePack<Ts...>> {
+    using type = TypePack<Ts...>;
+};
+
+template <typename... Ts, typename... Us, typename... Rest>
+struct PackConcat<TypePack<Ts...>, TypePack<Us...>, Rest...> {
+    using type = PackConcat<TypePack<Ts..., Us...>, Rest...>::type;
 };
 
 }  // namespace detail
@@ -50,7 +55,7 @@ template <template <typename> typename F, typename... Ts>
     requires(std::convertible_to<decltype(F<Ts>::value), bool> && ...)
 struct PackFilter<F, TypePack<Ts...>> {
     using Result =
-        detail::PackCat<std::conditional_t<F<Ts>::value, TypePack<Ts>, TypePack<>>...>::Result;
+        detail::PackConcat<std::conditional_t<F<Ts>::value, TypePack<Ts>, TypePack<>>...>::type;
 };
 
 template <typename T>
