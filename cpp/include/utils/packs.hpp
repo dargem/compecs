@@ -26,6 +26,33 @@ struct IsTypePackImpl<TypePack<Ts...>> : std::true_type {};
 template <typename T>
 concept IsTypePack = detail::IsTypePackImpl<T>::value;
 
+template <template <typename> typename F, typename T>
+    requires(std::convertible_to<decltype(F<T>::value), bool>)
+struct PackFilter {
+    static_assert(false, "PackFilter called without a pack");
+};
+
+namespace detail {
+
+template <typename... Ts>
+struct PackCat {
+    static_assert(false, "PackCat called without a pack");
+};
+
+template <typename... Ts>
+struct PackCat<TypePack<Ts>...> {
+    using Result = TypePack<Ts...>;
+};
+
+}  // namespace detail
+
+template <template <typename> typename F, typename... Ts>
+    requires(std::convertible_to<decltype(F<Ts>::value), bool> && ...)
+struct PackFilter<F, TypePack<Ts...>> {
+    using Result =
+        detail::PackCat<std::conditional_t<F<Ts>::value, TypePack<Ts>, TypePack<>>...>::Result;
+};
+
 template <typename T>
 struct PackConvert {
     static_assert(false, "PackConvert called without using a pack");
