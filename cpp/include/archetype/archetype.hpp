@@ -1,19 +1,17 @@
 #pragma once
 
 #include <cassert>
-#include <concepts>
 #include <cstdint>
-#include <exception>
 #include <ranges>
 #include <tuple>
 #include <type_traits>
 #include <vector>
 
-#include "ecs/components.hpp"
-#include "ecs/concepts.hpp"
-#include "utils/sparse_set.hpp"
+#include "components/component.hpp"
+#include "utils/compositions.hpp"
+#include "utils/packs.hpp"
 
-namespace ECS {
+namespace compecs {
 
 using ID = uint32_t;
 
@@ -175,4 +173,4 @@ class ArchetypeRegistry {
     std::tuple<Ts...> tables;
 };
 
-}  // namespace ECS
+}  // namespace compecs

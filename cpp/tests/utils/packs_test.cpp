@@ -13,7 +13,6 @@ struct IntConvertible : std::bool_constant<std::convertible_to<T, int>> {};
 TEST(PackTests, PackFilter) {
     using A = TypePack<double, int, std::string, long>;
     using R = PackFilter<IntConvertible, A>::Result;
-    // using R = TypePack<double, int>;
 
     ASSERT_TRUE((std::same_as<TypePack<double, int, long>, R>));
 }
