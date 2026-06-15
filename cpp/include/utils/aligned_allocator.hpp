@@ -38,7 +38,7 @@ class AlignedAllocator {
         return ptr;
     }
 
-    inline void deallocate(const value_type* ptr, std::size_t n) const noexcept { free(ptr); }
+    inline void deallocate(value_type* ptr, std::size_t n) const noexcept { free(ptr); }
 };
 
 }  // namespace compecs
