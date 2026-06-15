@@ -32,4 +32,23 @@ TEST(AlignedAllocator, CacheLineAlignedAllocation) {
     }
 }
 
+TEST(AlignedAllocator, VectorGetsAlignedAllocation) {
+    constexpr static size_t NUM_TESTS{100};
+
+    for (size_t i{}; i < NUM_TESTS; ++i) {
+        std::vector<int, AlignedAllocator<int>> a;
+        a.push_back(5);
+
+        std::vector<int, AlignedAllocator<int>> b;
+        b.push_back(5);
+
+        EXPECT_TRUE(reinterpret_cast<uintptr_t>(a.data()) %
+                        std::hardware_destructive_interference_size ==
+                    0);
+        EXPECT_TRUE(reinterpret_cast<uintptr_t>(b.data()) %
+                        std::hardware_destructive_interference_size ==
+                    0);
+    }
+}
+
 }  // namespace compecs

@@ -38,6 +38,13 @@ class AlignedAllocator {
         return ptr;
     }
 
+    // We need to implement a rebind as our Allocator isn't only templated by type
+    // So we need to explicitly tell it how to rebind the allocator to a different type
+    template <typename U>
+    struct rebind {
+        using other = AlignedAllocator<U, BYTE_ALIGN>;
+    };
+
     inline void deallocate(value_type* ptr, std::size_t n) const noexcept { free(ptr); }
 };
 
