@@ -23,4 +23,6 @@ concept CheckWrite = std::is_lvalue_reference_v<T> && !std::is_const_v<std::remo
 template <typename T>
 struct IsWrite : std::bool_constant<CheckWrite<T>> {};
 
+
+
 }  // namespace compecs

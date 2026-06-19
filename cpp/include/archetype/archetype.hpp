@@ -45,7 +45,7 @@ class ArchetypeTable {
 
         // Get relevant info
         const ID dataID = dataIndices[entityID];
-        const ID lastDataID = getDataSize() - 1;
+        const ID lastDataID = size() - 1;
         const ID lastID = metadata[lastDataID].rid;
         // Update validity ID
         ++metadata[dataID].validityID;
@@ -76,12 +76,12 @@ class ArchetypeTable {
         requires IsUniquePackTypes<TypePack<Csearch...>> &&
                  BoundedPacks<TypePack<Csearch...>, TypePack<Cs...>>
     auto columns() {
-        return std::views::zip(std::get<std::vector<Csearch>>(data)...) | std::views::reverse;
+        return std::views::zip(std::get<std::vector<Csearch>>(data)...);
     }
 
-   private:
-    inline size_t getDataSize() { return std::get<0>(data).size(); }
+    size_t size() const { return std::get<0>(data).size(); }
 
+   private:
     /**
      * @brief Makes a free slot returning an ID for use.
      *
@@ -89,19 +89,19 @@ class ArchetypeTable {
      */
     inline ID getFreeSlot() {
         const ID id = getFreeID();
-        dataIndices[id] = getDataSize();
+        dataIndices[id] = size();
         return id;
     }
 
     inline ID getFreeID() {
         // Available from the free list
-        if (metadata.size() > getDataSize()) {
-            ++metadata[getDataSize()].validityID;
-            return metadata[getDataSize()].rid;
+        if (metadata.size() > size()) {
+            ++metadata[size()].validityID;
+            return metadata[size()].rid;
         }
 
         // ID needs creation
-        const ID newID = getDataSize();
+        const ID newID = size();
         metadata.push_back({newID, {}});
         dataIndices.push_back(newID);
         return newID;
@@ -122,55 +122,6 @@ class ArchetypeTable {
 
     // tuple of dense vectors, where each vector holds a component type, SOA style
     std::tuple<std::vector<Cs>...> data;
-};
-
-template <typename T>
-concept TableQueryable = requires(T t) {
-    T::RelevantTablesComponents;
-    t.getTable();
-};
-
-template <typename T>
-concept HasComponentTypePack = requires { typename std::remove_cvref_t<T>::ComponentTypePack; };
-
-template <typename... Ts>
-    requires(HasComponentTypePack<Ts> && ...)
-class ArchetypeRegistry {
-   public:
-    /**
-     * @brief Query to find typepacked components of tables that are a superset of those components.
-     * ie query with bool and it responds std::tuple<TypePack<bool>, TypePack<bool, int>>
-     *
-     * @tparam ComponentQuery, (components the table must contain)
-     * @return auto, tuple of archetype table types.
-     */
-    template <Component... ComponentQuery>
-    using RelevantTablesComponents = decltype(std::tuple_cat(
-        std::conditional_t<
-            BoundedPacks<TypePack<ComponentQuery...>, typename Ts::ComponentTypePack>,
-            std::tuple<typename Ts::ComponentTypePack>, std::tuple<>>{}...));
-
-    /**
-     * @brief Query to find tuple of references to tables that are a superset of those components.
-     * ie query with bool for std::tuple<ArchetypeTable<bool>& A, ArchetypeTable<bool, int>& B>
-     *
-     * @tparam ComponentQuery, the components the table must contain
-     * @return auto, table of references to tables
-     */
-    template <Component... ComponentQuery>
-    auto getRelevantTables() {
-        return std::tuple_cat(([&] {
-            if constexpr (BoundedPacks<TypePack<ComponentQuery...>,
-                                       typename Ts::ComponentTypePack>) {
-                return std::tuple<Ts&>{std::get<Ts>(tables)};
-            } else {
-                return std::tuple<>{};
-            }
-        }())...);
-    }
-
-   private:
-    std::tuple<Ts...> tables;
 };
 
 }  // namespace compecs

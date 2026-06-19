@@ -1,7 +1,6 @@
 #ifndef COMPECS_LAMBDA_TRAITS_HPP
 #define COMPECS_LAMBDA_TRAITS_HPP
 
-#include <tuple>
 #include <type_traits>
 
 #include "utils/packs.hpp"
