@@ -61,9 +61,12 @@ class Manager<TypePack<Ts...>, TypePack<Qs...>> {
         };
 
         size_t num_elements{table.size()};
-        for (size_t i{}; i < num_elements - 16; i += 16) {
+        size_t i{};
+        for (; i < num_elements - 16; i += 16) {
             (execute_query(table, Qs{}, i, i + 16), ...);
         }
+
+        (execute_query(table, Qs{}, i, num_elements), ...);
     }
 
     std::tuple<Ts...> tables;

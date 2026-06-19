@@ -6,6 +6,14 @@
 
 namespace compecs {
 
+
+
+
+
+
+
+
+
 // To be a component it must inherit a ComponentTag. Should have 0 overhead due to empty base
 // optimisation and it not relying on polymorphism at runtime.
 struct ComponentTag {
