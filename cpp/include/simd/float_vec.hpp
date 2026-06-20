@@ -22,14 +22,14 @@ class alignas(S::bytes) FloatVec {
 
     FloatVec(S::__mi d) : data(d) {};
 
-    void store(uint32_t* mem_addr) { S::store_si(reinterpret_cast<S::__mi*>(mem_addr), data); }
+    void store(float* mem_addr) { S::store_ps(mem_addr, data); }
 
     friend FloatVec operator+(const FloatVec& a, const FloatVec& b) {
-        return S::add_epi32(a.data, b.data);
+        return S::add_ps(a.data, b.data);
     }
 
     friend FloatVec operator-(const FloatVec& a, const FloatVec& b) {
-        return S::sub_epi32(a.data, b.data);
+        return S::sub_ps(a.data, b.data);
     }
 
     // This is a mullo multiply so will trim overflow
@@ -42,29 +42,29 @@ class alignas(S::bytes) FloatVec {
     FloatVec operator>>(int bits) { return S::srli_epi32(data, bits); }
 
     FloatVec& operator+=(const FloatVec& other) {
-        data = S::add_epi32(data, other.data);
+        data = S::add_ps(data, other.data);
         return *this;
     }
 
     FloatVec& operator-=(const FloatVec& other) {
-        data = S::sub_epi32(data, other.data);
+        data = S::sub_ps(data, other.data);
         return *this;
     }
 
-    FloatVec& operator*=(const FloatVec& other) {
-        data = S::mullo_epi32(data, other.data);
-        return *this;
-    }
+    // FloatVec& operator*=(const FloatVec& other) {
+    //     data = S::mullo_epi32(data, other.data);
+    //     return *this;
+    // }
 
-    FloatVec& operator<<=(int bits) {
-        data = S::slli_epi32(data, bits);
-        return *this;
-    }
+    // FloatVec& operator<<=(int bits) {
+    //     data = S::slli_epi32(data, bits);
+    //     return *this;
+    // }
 
-    FloatVec& operator>>=(int bits) {
-        data = S::srli_epi32(data, bits);
-        return *this;
-    }
+    // FloatVec& operator>>=(int bits) {
+    //     data = S::srli_epi32(data, bits);
+    //     return *this;
+    // }
 };
 
 }  // namespace compecs

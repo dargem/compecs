@@ -59,6 +59,7 @@ struct InstructionSetTraits<InstructionSet::NONE> {
 
     // Float ops
     static __m sub_ps(__m a, __m b) { return a - b; }
+    static __m add_ps(__m a, __m b) { return a + b; }
     static __m set1_ps(float val) { return val; }
     static __m castsi_ps(__mi a) { return std::bit_cast<__m>(a); }
     static void store_ps(float* mem_addr, __m source) { *mem_addr = source; }
@@ -116,6 +117,7 @@ struct InstructionSetTraits<InstructionSet::AVX128> {
 
     // Float ops
     static __m sub_ps(__m a, __m b) { return _mm_sub_ps(a, b); }
+    static __m add_ps(__m a, __m b) { return _mm_add_ps(a, b); }
     static __m set1_ps(float val) { return _mm_set1_ps(val); }
     static __m castsi_ps(__mi a) { return _mm_castsi128_ps(a); }
     static void store_ps(float* mem_addr, __m source) { _mm_store_ps(mem_addr, source); }
@@ -175,6 +177,7 @@ struct InstructionSetTraits<InstructionSet::AVX256> {
 
     // Float ops
     static __m sub_ps(__m a, __m b) { return _mm256_sub_ps(a, b); }
+    static __m add_ps(__m a, __m b) { return _mm256_add_ps(a, b); }
     static __m set1_ps(float val) { return _mm256_set1_ps(val); }
     static __m castsi_ps(__mi a) { return _mm256_castsi256_ps(a); }
     static void store_ps(float* mem_addr, __m source) { _mm256_store_ps(mem_addr, source); }
@@ -221,6 +224,7 @@ struct InstructionSetTraits<InstructionSet::AVX512> {
 
     // Float ops
     static __m sub_ps(__m a, __m b) { return _mm512_sub_ps(a, b); }
+    static __m add_ps(__m a, __m b) { return _mm512_add_ps(a, b); }
     static __m set1_ps(float val) { return _mm512_set1_ps(val); }
     static __m castsi_ps(__mi a) { return _mm512_castsi512_ps(a); }
     static void store_ps(float* mem_addr, __m source) { _mm512_store_ps(mem_addr, source); }
