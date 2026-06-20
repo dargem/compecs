@@ -55,6 +55,7 @@ struct InstructionSetTraits<InstructionSet::NONE> {
     static __mi or_si(__mi a, __mi b) { return a | b; }
     static void store_si(__mi* mem_addr, __mi source) { *mem_addr = source; }
     static __mi load_si(__mi const* mem_addr) { return *mem_addr; }
+    static __m load_ps(const float* mem_addr) { return *mem_addr; }
 
     // Float ops
     static __m sub_ps(__m a, __m b) { return a - b; }
@@ -111,6 +112,7 @@ struct InstructionSetTraits<InstructionSet::AVX128> {
     static __mi or_si(__mi a, __mi b) { return _mm_or_si128(a, b); }
     static void store_si(__mi* mem_addr, __mi source) { _mm_store_si128(mem_addr, source); }
     static __mi load_si(__mi const* mem_addr) { return _mm_load_si128(mem_addr); }
+    static __m load_ps(const float* mem_addr) { return _mm_load_ps(mem_addr); }
 
     // Float ops
     static __m sub_ps(__m a, __m b) { return _mm_sub_ps(a, b); }
@@ -169,6 +171,7 @@ struct InstructionSetTraits<InstructionSet::AVX256> {
     static __mi or_si(__mi a, __mi b) { return _mm256_or_si256(a, b); }
     static void store_si(__mi* mem_addr, __mi source) { _mm256_store_si256(mem_addr, source); }
     static __mi load_si(__mi const* mem_addr) { return _mm256_load_si256(mem_addr); }
+    static __m load_ps(const float* mem_addr) { return _mm256_load_ps(mem_addr); }
 
     // Float ops
     static __m sub_ps(__m a, __m b) { return _mm256_sub_ps(a, b); }
@@ -214,6 +217,7 @@ struct InstructionSetTraits<InstructionSet::AVX512> {
     static __mi or_si(__mi a, __mi b) { return _mm512_or_si512(a, b); }
     static void store_si(__mi* mem_addr, __mi source) { _mm512_store_si512(mem_addr, source); }
     static __mi load_si(const __mi* mem_addr) { return _mm512_load_si512(mem_addr); }
+    static __m load_ps(const float* mem_addr) { return _mm512_load_ps(mem_addr); }
 
     // Float ops
     static __m sub_ps(__m a, __m b) { return _mm512_sub_ps(a, b); }
