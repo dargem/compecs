@@ -10,58 +10,58 @@ namespace compecs {
 using S = simd_traits::Set;
 
 // This is effectively a wrapper around our SIMD Set trait for an int vector register
-class alignas(S::bytes) Int32Vec {
+class alignas(S::bytes) UInt32Vec {
    public:
-    static constexpr size_t ELEMENTS{S::bytes / sizeof(int32_t)};
+    static constexpr size_t ELEMENTS{S::bytes / sizeof(uint32_t)};
     static constexpr size_t BYTES{S::bytes};
 
     S::__mi data;
-    Int32Vec(int32_t* mem_addr) : data(S::load_si(reinterpret_cast<S::__mi*>(mem_addr))) {
+    UInt32Vec(uint32_t* mem_addr) : data(S::load_si(reinterpret_cast<S::__mi*>(mem_addr))) {
         assert(reinterpret_cast<uintptr_t>(mem_addr) % BYTES == 0);
     }
 
-    Int32Vec(S::__mi d) : data(d) {};
+    UInt32Vec(S::__mi d) : data(d) {};
 
-    void store(int32_t* mem_addr) { S::store_si(reinterpret_cast<S::__mi*>(mem_addr), data); }
+    void store(uint32_t* mem_addr) { S::store_si(reinterpret_cast<S::__mi*>(mem_addr), data); }
 
-    friend Int32Vec operator+(const Int32Vec& a, const Int32Vec& b) {
+    friend UInt32Vec operator+(const UInt32Vec& a, const UInt32Vec& b) {
         return S::add_epi32(a.data, b.data);
     }
 
-    friend Int32Vec operator-(const Int32Vec& a, const Int32Vec& b) {
+    friend UInt32Vec operator-(const UInt32Vec& a, const UInt32Vec& b) {
         return S::sub_epi32(a.data, b.data);
     }
 
     // This is a mullo multiply so will trim overflow
-    friend Int32Vec operator*(const Int32Vec& a, const Int32Vec& b) {
+    friend UInt32Vec operator*(const UInt32Vec& a, const UInt32Vec& b) {
         return S::mullo_epi32(a.data, b.data);
     }
 
-    Int32Vec operator<<(int bits) { return S::slli_epi32(data, bits); }
+    UInt32Vec operator<<(int bits) { return S::slli_epi32(data, bits); }
 
-    Int32Vec operator>>(int bits) { return S::srli_epi32(data, bits); }
+    UInt32Vec operator>>(int bits) { return S::srli_epi32(data, bits); }
 
-    Int32Vec& operator+=(const Int32Vec& other) {
+    UInt32Vec& operator+=(const UInt32Vec& other) {
         data = S::add_epi32(data, other.data);
         return *this;
     }
 
-    Int32Vec& operator-=(const Int32Vec& other) {
+    UInt32Vec& operator-=(const UInt32Vec& other) {
         data = S::sub_epi32(data, other.data);
         return *this;
     }
 
-    Int32Vec& operator*=(const Int32Vec& other) {
+    UInt32Vec& operator*=(const UInt32Vec& other) {
         data = S::mullo_epi32(data, other.data);
         return *this;
     }
 
-    Int32Vec& operator<<=(int bits) {
+    UInt32Vec& operator<<=(int bits) {
         data = S::slli_epi32(data, bits);
         return *this;
     }
 
-    Int32Vec& operator>>=(int bits) {
+    UInt32Vec& operator>>=(int bits) {
         data = S::srli_epi32(data, bits);
         return *this;
     }
